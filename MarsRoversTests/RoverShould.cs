@@ -33,15 +33,17 @@ namespace MarsRoversTests
         }
 
         [Test]
-        public void Move()
+        [TestCase ("1 2 N", "LMLMLMLMM", "1 3 N")]
+        [TestCase ("3 3 E","MMRMMRMRRM", "5 1 E")]
+        public void Move(string roverStartPosition, string roverCommand, string expectedRoverEndPosition)
         {
             //Arrange
-            Rover rover = new Rover("1 2 N");
+            Rover rover = new Rover(roverStartPosition);
             //Act
             rover.Move(rover,
-                       "LMLMLMLMM");
+                       roverCommand);
             //Assert
-            Assert.AreEqual("1 3 N", rover.x + " " + rover.y + " " + rover.heading);
+            Assert.AreEqual(expectedRoverEndPosition, rover.x + " " + rover.y + " " + rover.heading);
         }
     }
 }
