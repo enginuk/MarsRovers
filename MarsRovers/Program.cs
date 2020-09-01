@@ -7,6 +7,11 @@ namespace MarsRovers
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            var roverManager = new RoversManager();
+            string input;
+            //roverManager.SetupPlateauAndRovers(input);
+            //roverManager.Run();
         }
     }
 }

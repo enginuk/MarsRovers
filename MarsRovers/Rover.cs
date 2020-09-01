@@ -1,94 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace MarsRovers
 {
     public class Rover
     {
-        private int _x;
-        public int x
+        private Plateau _plateau;
+
+        public Rover(Position position, string heading)
         {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                _x = value;
-            }
+            CurrentPosition = position;
+            Heading = heading;
         }
 
-        private int _y;
-        public int y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                _y = value;
-            }
-        }
-        public string heading { get; set; }
+        public Position CurrentPosition { get; set; } 
 
-        private int xPosition;
-        private int yPosition;
-
-        public Rover(string roverPosition)
+        public Rover SetPlateau(Plateau plateau)
         {
-            Int32.TryParse(roverPosition.Split(" ")[0], out xPosition);
-            _x = xPosition;
-            Int32.TryParse(roverPosition.Split(" ")[1], out yPosition);
-            _y = yPosition;
-            heading = roverPosition.Split(" ")[2];
+            _plateau = plateau;
+            
+            return this;
         }
 
-        public void SpinLeft(Rover rover)
+        public string Heading { get; set; }
+
+        private void SpinLeft()
         {
-            switch (rover.heading)
+            switch (Heading)
             {
                 case "N":
-                    rover.heading = "W";
+                    Heading = "W";
                     break;
                 case "E":
-                    rover.heading = "N";
+                    Heading = "N";
                     break;
                 case "S":
-                    rover.heading = "E";
+                    Heading = "E";
                     break;
                 case "W":
-                    rover.heading = "S";
+                    Heading = "S";
                     break;
                 default:
                     break;
             }
         }
 
-        public void SpinRight(Rover rover)
+        private void SpinRight()
         {
-            switch (rover.heading)
+            switch (Heading)
             {
                 case "N":
-                    rover.heading = "E";
+                    Heading = "E";
                     break;
                 case "E":
-                    rover.heading = "S";
+                    Heading = "S";
                     break;
                 case "S":
-                    rover.heading = "W";
+                    Heading = "W";
                     break;
                 case "W":
-                    rover.heading = "N";
+                    Heading = "N";
                     break;
                 default:
                     break;
             }
         }
 
-        public void Move(Rover rover, string roverCommand)
+        public void Move(string roverCommand)
         {
+            if (_plateau == null)
+            {
+                throw new Exception("Plateau must be defined");
+            }
+
             char[] command = roverCommand.ToCharArray();
 
             for (int i = 0; i < command.Length; i++)
@@ -96,25 +82,42 @@ namespace MarsRovers
                 switch (command[i])
                 {
                     case 'L':
-                        rover.SpinLeft(rover);
+                        SpinLeft();
                         break;
                     case 'R':
-                        rover.SpinRight(rover);
+                        SpinRight();
                         break;
                     case 'M':
-                        if (rover.heading == "N")
-                            y += 1;
-                        if (rover.heading == "E")
-                            x += 1;
-                        if (rover.heading == "S")
-                            y -= 1;
-                        if (rover.heading == "W")
-                            x -= 1;
+                        var projectedX = CurrentPosition.RoverXPosition;
+                        var projectedY = CurrentPosition.RoverYPosition;
+                        
+                        if (Heading == "N") 
+                            projectedY += 1;
+
+                        if (Heading == "E")
+                            projectedX += 1;
+
+                        if (Heading == "S")
+                            projectedY -= 1;
+
+                        if (Heading == "W")
+                            projectedX -= 1;
+
+                        var projectedPosition = new Position(projectedX, projectedY);
+
+                        if (ValidateProjectedPosition(projectedPosition))
+                            CurrentPosition = projectedPosition;
+
                         break;
                     default:
                         break;
                 }
             }
+        }
+
+        private bool ValidateProjectedPosition(Position projectedPosition)
+        {
+            return true;
         }
     }
 }
