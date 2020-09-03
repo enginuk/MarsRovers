@@ -6,12 +6,11 @@ namespace MarsRovers
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             var roverManager = new RoversManager();
-            string input;
-            //roverManager.SetupPlateauAndRovers(input);
-            //roverManager.Run();
+            string input = "5 5\n1 2 N\nLMLMLMLMM\n3 3 E\nMMRMMRMRRM";
+            var output = roverManager.Execute(input);
+            Console.WriteLine(output);
+            Console.ReadLine();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace MarsRovers
         public string Execute(string input)
         {
             var isNasaCommandLengthValid = Validate(input);
+            var totalRovers = 0;
             if (!isNasaCommandLengthValid)
             {
                 return ("Please enter correct number of lines");
@@ -40,7 +41,26 @@ namespace MarsRovers
                 roversOnMars[x].SetPlateau(plateau).Move(roverCommand[x]);
             }
 
-            // ToDo: Return Output string
+            List<string> roversSucessfulMove = new List<string>();
+
+            foreach (var rover in roversOnMars)
+            {
+                if (rover.HasMovedSuccessfully)
+                {
+                    roversSucessfulMove.Add (rover.CurrentPosition.RoverXPosition +" "
+                                                                                  +rover.CurrentPosition.RoverYPosition +" "
+                                                                                  + rover.Heading);
+                    roversSucessfulMove.Add("\n");
+                    totalRovers++;
+                    if (totalRovers == roversOnMars.Count)
+                        return string.Join("", roversSucessfulMove);
+                }
+                else
+                {
+                    return ("Collision or out of Plateau detected. Vehicle unable to move.");
+                }
+            }
+
             return string.Empty;
         }
 
@@ -53,7 +73,6 @@ namespace MarsRovers
 
             if (numLines % 2 == 1)
             {
-                _numberOfRovers = (numLines - 1) / 2;
                 return true;
             }
 
@@ -64,45 +83,49 @@ namespace MarsRovers
 
         public void ParseNasaCommand(string nasaCommand)
         {
-            var lines = File.ReadAllLines(nasaCommand);
+            var lines = nasaCommand.Split(new[] {'\n'});
             int counter = 0;
 
             foreach (var line in lines)
             {
+                bool restartLoopFlag = false;
                 if (counter == 0)
                 {
                     Int32.TryParse(line.Split(" ")[0], out xplateau);
                     Int32.TryParse(line.Split(" ")[1], out yplateau);
                     counter++;
+                    restartLoopFlag = true;
                 }
 
                 var roverPosAndCommand = new RoverPosAndCommand();
 
-                if (counter % 2 == 1)
+                if (counter % 2 == 1 && restartLoopFlag == false)
                 {
                     Int32.TryParse(line.Split(" ")[0], out roverXPosition);
                     roverPosAndCommand.X = roverXPosition;
                     Int32.TryParse(line.Split(" ")[1], out roverYPosition);
                     roverPosAndCommand.Y = roverYPosition;
                     var heading = line.Split(" ")[2];
-                    counter++;
                     var position = new Position(roverXPosition, roverYPosition);
 
-
                     roversOnMars.Add(item: new Rover(position, heading));
+                    counter++;
+                    restartLoopFlag = true;
                 }
 
-                if (counter % 2 == 0)
+                if (counter % 2 == 0 && restartLoopFlag == false)
                 {
                     roverPosAndCommand.NasaCommand = line;
                     roverCommand.Add(line);
                     counter++;
-
+                    restartLoopFlag = true;
                 }
+
+
             }
         }
 
-        // Initiliaze LAndscape
+        // Initiliaze Landscape
 
         public Plateau InitialisePlateau(IEnumerable<Position> positions)
         {

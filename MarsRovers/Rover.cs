@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 
 namespace MarsRovers
@@ -13,6 +14,7 @@ namespace MarsRovers
         {
             CurrentPosition = position;
             Heading = heading;
+            HasMovedSuccessfully = true;
         }
 
         public Position CurrentPosition { get; set; } 
@@ -25,6 +27,7 @@ namespace MarsRovers
         }
 
         public string Heading { get; set; }
+        public bool HasMovedSuccessfully { get; set; }
 
         private void SpinLeft()
         {
@@ -106,7 +109,14 @@ namespace MarsRovers
                         var projectedPosition = new Position(projectedX, projectedY);
 
                         if (ValidateProjectedPosition(projectedPosition))
+                        {
                             CurrentPosition = projectedPosition;
+                            HasMovedSuccessfully = true;
+                        }
+                        else
+                        {
+                            HasMovedSuccessfully = false;
+                        }
 
                         break;
                     default:
@@ -117,6 +127,14 @@ namespace MarsRovers
 
         private bool ValidateProjectedPosition(Position projectedPosition)
         {
+            bool isNonAccessiblePositions = _plateau.NonAccesiblePositions.Contains(projectedPosition);
+
+            if (isNonAccessiblePositions || 
+                projectedPosition.RoverXPosition < 0 || 
+                projectedPosition.RoverYPosition > _plateau.YPlateau)
+            {
+                return false;
+            }
             return true;
         }
     }

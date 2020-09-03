@@ -20,16 +20,14 @@ namespace MarsRoversTests
         {
             //Arrange
             var startingPosition = new Position(0, 0);
+            var heading = "N";
+            var rover = new Rover(startingPosition, heading);
 
             var plateau = new Plateau
             {
                 XPlateau = 5,
                 YPlateau = 5
             };
-
-            var heading = "N";
-
-            var rover = new Rover(startingPosition, heading);
 
             //Act
             rover.SetPlateau(plateau).Move(spinCommand);
@@ -41,75 +39,83 @@ namespace MarsRoversTests
             Assert.AreEqual(expectedHeading, rover.Heading);
         }
 
-    //    [Test]
-    //    public void SpinLeft_RoverShouldSpinLeft_ReturnsHeading()
-    //    {
-    //        //Arrange
-    //        var startingPosition = new Position(0 ,0);
+        [Test]
+        [TestCase(1,2,"N", "LMLMLMLMM", "1 3 N")]
+        [TestCase(3, 3, "E", "MMRMMRMRRM", "5 1 E")]
+        public void SingleRover_ShouldBeAbleTo_SpinAndMove(int startPosX, int startPosY, string heading, string moveCommand, string expectedOutput)
+        {
+            //Arrange
+            var startingPosition = new Position(startPosX,startPosY);
+            var rover = new Rover(startingPosition, heading);
 
-    //        Rover rover = new Rover(startingPosition).SetPlateau(plateau).Move("1 2 N");
+            List<Position> positions = new List<Position>();
+            {
+                positions.Add(new Position(5, 5));
+            }
+
+            var plateau = new Plateau
+            {
+                XPlateau = 5,
+                YPlateau = 5,
+                NonAccesiblePositions = positions
+            };
+
+            //Act
+            rover.SetPlateau(plateau).Move(moveCommand);
             
-    //        //Act
-    //        rover.Move("L");
+            //Assert
+            Assert.AreEqual(expectedOutput, rover.CurrentPosition.RoverXPosition + " " +
+                                            rover.CurrentPosition.RoverYPosition + " " +
+                                            rover.Heading);
+        }
 
-    //        //Assert
-    //        Assert.AreEqual("1 2 W", rover.CurrentPosition);
-    //    }
+        [Test]
+        [TestCase(1, 2, "N", "LMLMLMLMM", "1 2 N")]
+        public void Rover_ShouldNotMoveIfOutsidePlateau(int startPosX, int startPosY, string heading, string moveCommand, string expectedOutput)
+        {
+            //Arrange
+            var startingPosition = new Position(startPosX, startPosY);
+            var rover = new Rover(startingPosition, heading);
 
-    //    [Test]
-    //    public void SpinRight_RoverShouldSpinRight_ReturnsHeading()
-    //    {
-    //        //Arrange
-    //        Rover rover = new Rover("1 2 N");
-    //        //Act
-    //        rover.SpinRight();
-    //        //Assert
-    //        Assert.AreEqual("E", rover.Heading);
-    //    }
+            List<Position> positions = new List<Position>();
+            {
+                positions.Add(new Position(5, 5));
+            }
 
-    //    [Test]
-    //    [TestCase ("1 2 N", "LMLMLMLMM", "1 3 N")]
-    //    [TestCase ("3 3 E","MMRMMRMRRM", "5 1 E")]
-    //    public void Move(string roverStartPosition, string roverCommand, string expectedRoverEndPosition)
-    //    {
-    //        string x = "hello world";
-    //        var z = x.Length(x);
+            var plateau = new Plateau
+            {
+                XPlateau = 2,
+                YPlateau = 2,
+                NonAccesiblePositions = positions
+            };
 
-    //        //Arrange
-    //        Rover rover = new Rover(roverStartPosition);
-    //        //Act
-    //        rover.Move(roverCommand);
-    //        //Assert
-    //        Assert.AreEqual(expectedRoverEndPosition, rover.x + " " + rover.y + " " + rover.Heading);
-    //    }
+            //Act
+            rover.SetPlateau(plateau).Move(moveCommand);
 
+            //Assert
+            Assert.AreEqual(expectedOutput, rover.CurrentPosition.RoverXPosition + " " +
+                                            rover.CurrentPosition.RoverYPosition + " " +
+                                            rover.Heading);
+        }
 
-    //    public void Test1()
-    //    {
-    //        var landscape = new LandScape("5 5");
-    //        var rover = new Rover(landscape);
-    //        rover.SetPosition("1 2 N");
-    //        rover.Move("");
+        [Test]
+        [TestCase(1, 2, "N", "LMLMLMLMM", "1 2 N")]
+        public void Rover_ShouldNotMoveIfItCollidesWithAnotherRover(int startPosX, int startPosY, string heading, string moveCommand, string expectedOutput)
+        {
+            //Arrange
+            var startingPosition = new Position(startPosX, startPosY);
+            var rover = new Rover(startingPosition, heading);
+            var input = "5 5\n1 2 N\nLMLMLMLMM\n1 2 N\nMMRMMRMRRM";
+            var roverManager = new RoversManager();
 
-    //        Assert.AreEqual("", rover.CurrentPosition);
+            //Act
 
+            roverManager.Execute(input);
 
-    //        rover.Set("5 5 \n 1 2 N \ ");
-
-
-    //    }
-    //}
-
-    //public class LandScape
-    //{
-    //    private int x;
-    //    private int y;
-
-    //    private List<int, int> UnAccessibleGridPositions = new   
-
-    //    public LandScape("x y")
-    //    {
-        
-    //    }
+            //Assert
+            Assert.AreEqual(expectedOutput, rover.CurrentPosition.RoverXPosition + " " +
+                                            rover.CurrentPosition.RoverYPosition + " " +
+                                            rover.Heading);
+        }
     }
 }
