@@ -61,7 +61,7 @@ namespace MarsRovers
                 }
             }
 
-            return string.Empty;
+            return ("No Rovers set");
         }
 
 

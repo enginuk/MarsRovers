@@ -105,7 +105,7 @@ namespace MarsRoversTests
             //Arrange
             var startingPosition = new Position(startPosX, startPosY);
             var rover = new Rover(startingPosition, heading);
-            var input = "5 5\n1 2 N\nLMLMLMLMM\n1 2 N\nMMRMMRMRRM";
+            var input = "5 5\n1 2 N\nLMLMLMLMM\n1 3 N\nMMRMMRMRRM";
             var roverManager = new RoversManager();
 
             //Act

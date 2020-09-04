@@ -130,7 +130,9 @@ namespace MarsRovers
             bool isNonAccessiblePositions = _plateau.NonAccesiblePositions.Contains(projectedPosition);
 
             if (isNonAccessiblePositions || 
-                projectedPosition.RoverXPosition < 0 || 
+                projectedPosition.RoverXPosition < 0 ||
+                projectedPosition.RoverYPosition < 0 ||
+                projectedPosition.RoverXPosition > _plateau.XPlateau ||
                 projectedPosition.RoverYPosition > _plateau.YPlateau)
             {
                 return false;
